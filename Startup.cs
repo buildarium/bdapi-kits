@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Neo4j.Driver.V1;
+using bdapi_kits.Services;
 
 namespace bdapi_kits
 {
@@ -26,8 +26,7 @@ namespace bdapi_kits
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddSingleton<IDriver>(provider => CreateDriver());
-
+      services.AddScoped<KitService>();
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
     }
 
@@ -46,11 +45,6 @@ namespace bdapi_kits
 
       app.UseHttpsRedirection();
       app.UseMvc();
-    }
-
-    private IDriver CreateDriver()
-    {
-      return GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "biggio77"));
     }
   }
 }

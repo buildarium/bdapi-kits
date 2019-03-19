@@ -4,13 +4,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using bdapi_kits.Models;
+using bdapi_kits.Services;
 
 namespace bdapi_kits.Controllers
 {
     [Route("kit")]
     [ApiController]
-    public class KitsController : ControllerBase
+    public class KitController : ControllerBase
     {
+        private readonly KitService _kitService;
+
+        public KitController(KitService kitService)
+        {
+            _kitService = kitService;
+        }
+
         /* User actions */
 
         // Get your current claimed kits
@@ -18,6 +26,8 @@ namespace bdapi_kits.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
+            IEnumerable<Kit> kits = _kitService.GetOwnedKits();
+            Console.WriteLine(kits.ToString());
             return new string[] { "value1", "value2" };
         }
 

@@ -13,8 +13,6 @@ namespace bdapi_kits.Models
       {
         throw new ArgumentNullException(nameof(node));
       }
-
-      Username = node.GetOrDefault<string>(UsernameKey, null);
     }
 
     public string Username { get; }
