@@ -6,7 +6,10 @@ namespace bdapi_kits.Models
 {
   public class Kit
   {
-    public string Token { get; }
-    public UserModel Owner { get; }
+    [JsonProperty("Token")]
+    public string Token { get; set; }
+
+    [JsonProperty("")]
+    public string Type { get; set; }
   }
 }
