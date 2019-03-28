@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using Neo4j.Driver.V1;
+using Newtonsoft.Json;
 
 namespace bdapi_kits.Models
 {
   public class Kit
   {
-    [JsonProperty("Token")]
+    [JsonProperty("token")]
     public string Token { get; set; }
 
-    [JsonProperty("")]
+    [JsonProperty("type")]
     public string Type { get; set; }
   }
 }
