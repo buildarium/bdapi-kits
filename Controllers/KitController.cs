@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace bdapi_kits.Controllers
 {
   [Route("kit")]
-  [Produces("application/json")]
+  // [Produces("application/json")]
   [ApiController]
   public class KitController : ControllerBase
   {
@@ -26,10 +26,10 @@ namespace bdapi_kits.Controllers
     // Get your current claimed kits
     // GET /kit
     [HttpGet]
-    public HttpResponseMessage Get()
+    public IEnumerable<Kit> Get()
     {
       IEnumerable<Kit> kits = _kitService.GetOwnedKits();
-      return Request.CreateResponse(HttpStatusCode.Ok, kits);
+      return kits;
     }
 
     // Claim a kit
