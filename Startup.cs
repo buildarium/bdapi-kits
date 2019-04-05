@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,12 +28,26 @@ namespace bdapi_kits
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddScoped<KitService>();
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options => {
+          options.Authority = "https://securetoken.google.com/buildarium";
+          options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+          {
+            ValidateIssuer = true,
+            ValidIssuer = "https://securetoken.google.com/buildarium",
+            ValidateAudience = true,
+            ValidAudience = "buildarium",
+            ValidateLifetime = true
+          };
+        });
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
+      app.UseAuthentication();
+
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();

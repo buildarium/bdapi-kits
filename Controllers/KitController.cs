@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using bdapi_kits.Models;
 using bdapi_kits.Services;
 using Newtonsoft.Json;
 
 namespace bdapi_kits.Controllers
 {
+  // [Authorize]
   [Route("kit")]
   // [Produces("application/json")]
   [ApiController]
@@ -28,6 +30,7 @@ namespace bdapi_kits.Controllers
     [HttpGet]
     public IEnumerable<Kit> Get()
     {
+      Console.WriteLine(HttpContext.User);
       IEnumerable<Kit> kits = _kitService.GetOwnedKits();
       return kits;
     }
