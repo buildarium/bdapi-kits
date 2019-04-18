@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace bdapi_kits.Controllers
 {
-  // [Authorize]
+  [Authorize]
   [Route("kit")]
   // [Produces("application/json")]
   [ApiController]
@@ -26,13 +26,22 @@ namespace bdapi_kits.Controllers
     /* User actions */
 
     // Get your current claimed kits
-    // GET /kit
-    [HttpGet]
-    public IEnumerable<Kit> Get()
+    // GET /kit/me
+    [HttpGet("me")]
+    public IEnumerable<Kit> GetMyKits()
     {
-      Console.WriteLine(HttpContext.User);
-      IEnumerable<Kit> kits = _kitService.GetOwnedKits();
+      // Console.WriteLine(HttpContext.User);
+      IEnumerable<Kit> kits = _kitService.GetOwnedKits("user321");
       return kits;
+    }
+
+    // Get the details for some claimed kit
+    // GET /kit/id/{kid}
+    [HttpGet("id/{uid}")]
+    public Kit GetKitDetails(string uid)
+    {
+      Kit kit = _kitService.GetKitDetails(uid).First();
+      return kit;
     }
 
     // Claim a kit
@@ -40,11 +49,12 @@ namespace bdapi_kits.Controllers
     [HttpPut("{token}")]
     public void Put(string token, [FromBody] string value)
     {
+      Kit kit = _kitService.ClaimKit("user321", token).First();
     }
 
     /* Administrative actions */
 
-    // Add an available kit for sale
+    // Add an available kit that's ready to be claimed
     // POST /kit
     [HttpPost]
     public void Post([FromBody] string value)
