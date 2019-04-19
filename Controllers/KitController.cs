@@ -35,11 +35,11 @@ namespace bdapi_kits.Controllers
         }
         
         // Get the details for some claimed kit
-        // GET /kit/id/{kid}
+        // GET /kit/id/{uid}
         [HttpGet("id/{uid}")]
-        public Kit GetKitDetails(string uid)
+        public IEnumerable GetKitDetails(string uid)
         {
-            Kit kit = _kitService.GetKitDetails(uid).First();
+            IEnumerable kit = _kitService.GetKitDetails(uid);
             return kit;
         }
         

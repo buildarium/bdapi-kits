@@ -30,11 +30,11 @@ namespace bdapi_kits.Services
             //return null;
         }
         
-        public IEnumerable<Kit> GetKitDetails(string Kid)
+        public IEnumerable<Kit> GetKitDetails(string Uid)
         {
             return _client.Cypher
                 .Match("(kit:Kit)")
-                .Where((Kit kit) => kit.Uid == Kid)
+                .Where((Kit kit) => kit.Uid == Uid)
                 .Return(kit => kit.As<Kit>())
                 .Results;
         }
