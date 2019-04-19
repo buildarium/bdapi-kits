@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Neo4jClient;
 using Microsoft.Extensions.Configuration;
 using bdapi_kits.Models;
+using System.Collections;
 
 namespace bdapi_kits.Services
 {
@@ -16,13 +17,17 @@ namespace bdapi_kits.Services
             _client = graphClient;
         }
         
-        public IEnumerable<Kit> GetOwnedKits(string Uid)
+        public IEnumerable GetOwnedKits(string Uid)
         {
             return _client.Cypher
                 .OptionalMatch("(user:User)-[OWNS]-(kit:Kit)")
                 .Where((User user) => user.Uid == Uid)
-                .Return(kit => kit.As<Kit>())
+                .Return((user, kit) => new {
+                    User = user.As<User>(),
+                    Kits = kit.CollectAs<Kit>()
+                })
                 .Results;
+            //return null;
         }
         
         public IEnumerable<Kit> GetKitDetails(string Kid)

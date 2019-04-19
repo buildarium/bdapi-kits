@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -28,10 +28,9 @@ namespace bdapi_kits.Controllers
         // Get your current claimed kits
         // GET /kit/me
         [HttpGet("me")]
-        public IEnumerable<Kit> GetMyKits()
+        public IEnumerable GetMyKits()
         {
-            // Console.WriteLine(HttpContext.User);
-            IEnumerable<Kit> kits = _kitService.GetOwnedKits("456");
+            // TODO: Get first from IEnumerable rather than an array            IEnumerable kits = _kitService.GetOwnedKits("456");
             return kits;
         }
         
