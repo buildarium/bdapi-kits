@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace bdapi_kits.Models
 {
-  public class User
-  {
-    [JsonProperty("uid")]
-    public string Uid { get; set; }
-  }
+    public class User
+    {
+        [JsonProperty("uid")]
+        public string Uid { get; set; }
+    }
 }
