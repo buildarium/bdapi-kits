@@ -39,6 +39,7 @@ namespace bdapi_kits.Controllers
         [HttpGet("id/{uid}")]
         public IEnumerable GetKitDetails(string uid)
         {
+            // TODO: Get first from IEnumerable rather than an array
             IEnumerable kit = _kitService.GetKitDetails(uid);
             return kit;
         }
@@ -46,24 +47,18 @@ namespace bdapi_kits.Controllers
         // Claim a kit
         // PUT /kit/51dbd231dfs241dsdae23c4a
         [HttpPut("{token}")]
-        public void Put(string token, [FromBody] string value)
+        public IEnumerable Put(string token)
         {
-            Kit kit = _kitService.ClaimKit("456", token).First();
+            IEnumerable kit = _kitService.ClaimKit("456", token);
+            return kit;
         }
-        
+
         /* Administrative actions */
-        
+
         // Add an available kit that's ready to be claimed
         // POST /kit
         [HttpPost]
         public void Post([FromBody] string value)
-        {
-        }
-        
-        // Remove a kit
-        // DELETE kit/51dbd231dfs241dsdae23c4a
-        [HttpDelete("{token}")]
-        public void Delete(string token)
         {
         }
     }

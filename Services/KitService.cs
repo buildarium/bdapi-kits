@@ -41,23 +41,24 @@ namespace bdapi_kits.Services
         
         public IEnumerable<Kit> ClaimKit(string Uid, string Token)
         {
+            var newUser = new User { Uid = Uid };
             // Create user in database if doesn't already exist
             _client.Cypher
                 .Merge("(user:User { Uid: {uid} })")
                 .OnCreate()
-                // .Set("user = {newUser}")
+                .Set("user = {newUser}")
                 .WithParams(new {
-                  uid = Uid,
-                  // newUser
+                    uid = Uid,
+                    newUser
                 })
                 .ExecuteWithoutResults();
             
             // Relate kit node to user node
             return _client.Cypher
-                .Match("(claimer:User)", "(target:Kit")
+                .Match("(claimer:User)", "(target:Kit)")
                 .Where((User claimer) => claimer.Uid == Uid)
                 .AndWhere((Kit target) => target.Token == Token)
-                .CreateUnique("claimer-[:OWNS]->target")
+                .CreateUnique("(claimer)-[:OWNS]->(target)")
                 .Return(target => target.As<Kit>())
                 .Results;
         }
