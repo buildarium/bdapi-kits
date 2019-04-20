@@ -33,8 +33,8 @@ namespace bdapi_kits.Controllers
         {
             string Email = (string) JObject.Parse(HttpContext.User.Claims.
                 ToList().Last().Value)["identities"]["email"][0];
-            // TODO: Get first from IEnumerable rather than an array            IEnumerable kits = _kitService.GetOwnedKits(Email);
-            return kits;
+            // TODO: Get first from IEnumerable rather than an array            IEnumerable MyKits = _kitService.GetOwnedKits(Email);
+            return MyKits;
         }
         
         // Get the details for some claimed kit
@@ -43,8 +43,8 @@ namespace bdapi_kits.Controllers
         public IEnumerable GetKitDetails(string uid)
         {
             // TODO: Get first from IEnumerable rather than an array
-            IEnumerable kit = _kitService.GetKitDetails(uid);
-            return kit;
+            IEnumerable SomeKit = _kitService.GetKitDetails(uid);
+            return SomeKit;
         }
         
         // Claim a kit
@@ -55,8 +55,8 @@ namespace bdapi_kits.Controllers
             string Email = (string)JObject.Parse(HttpContext.User.Claims.
                 ToList().Last().Value)["identities"]["email"][0];
             // TODO: Get first from IEnumerable rather than an array
-            IEnumerable kit = _kitService.ClaimKit(Email, token);
-            return kit;
+            IEnumerable ClaimedKit = _kitService.ClaimKit(Email, token);
+            return ClaimedKit;
         }
 
         /* Administrative actions */
@@ -64,8 +64,16 @@ namespace bdapi_kits.Controllers
         // Add an available kit that's ready to be claimed
         // POST /kit
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IEnumerable Post([FromBody] Kit k)
         {
+            string Email = (string)JObject.Parse(HttpContext.User.Claims.
+                ToList().Last().Value)["identities"]["email"][0];
+            if (Email == "buck@bucktower.net")
+            {
+                IEnumerable NewKit = _kitService.CreateKit(k);
+                return NewKit;
+            }
+            return null;
         }
     }
 }

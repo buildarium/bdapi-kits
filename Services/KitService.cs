@@ -16,12 +16,12 @@ namespace bdapi_kits.Services
             graphClient.Connect();
             _client = graphClient;
         }
-        
-        public IEnumerable GetOwnedKits(string Uid)
+
+        public IEnumerable GetOwnedKits(string uid)
         {
             return _client.Cypher
                 .OptionalMatch("(user:User)-[OWNS]-(kit:Kit)")
-                .Where((User user) => user.Uid == Uid)
+                .Where((User user) => user.Uid == uid)
                 .Return((user, kit) => new {
                     User = user.As<User>(),
                     Kits = kit.CollectAs<Kit>()
@@ -29,26 +29,26 @@ namespace bdapi_kits.Services
                 .Results;
             //return null;
         }
-        
-        public IEnumerable<Kit> GetKitDetails(string Uid)
+
+        public IEnumerable<Kit> GetKitDetails(string uid)
         {
             return _client.Cypher
                 .Match("(kit:Kit)")
-                .Where((Kit kit) => kit.Uid == Uid)
+                .Where((Kit kit) => kit.Uid == uid)
                 .Return(kit => kit.As<Kit>())
                 .Results;
         }
-        
-        public IEnumerable<Kit> ClaimKit(string Uid, string Token)
+
+        public IEnumerable<Kit> ClaimKit(string uid, string token)
         {
-            var newUser = new User { Uid = Uid };
+            var newUser = new User { Uid = uid };
             // Create user in database if doesn't already exist
             _client.Cypher
-                .Merge("(user:User { Uid: {uid} })")
+                .Merge("(user:User { Uid: {newUid} })")
                 .OnCreate()
                 .Set("user = {newUser}")
                 .WithParams(new {
-                    uid = Uid,
+                    newUid = uid,
                     newUser
                 })
                 .ExecuteWithoutResults();
@@ -56,7 +56,7 @@ namespace bdapi_kits.Services
             // Check if node has already been claimed
             IEnumerable<Kit> ExistingRel = _client.Cypher
                 .OptionalMatch("(u:User)-[:OWNS]-(k:Kit)")
-                .Where((Kit k) => k.Token == Token)
+                .Where((Kit k) => k.Token == token)
                 .Return(k => k.As<Kit>())
                 .Results;
             if (ExistingRel.First() != null)
@@ -67,10 +67,25 @@ namespace bdapi_kits.Services
             // Relate kit node to user node
             return _client.Cypher
                 .Match("(claimer:User)", "(target:Kit)")
-                .Where((User claimer) => claimer.Uid == Uid)
-                .AndWhere((Kit target) => target.Token == Token)
+                .Where((User claimer) => claimer.Uid == uid)
+                .AndWhere((Kit target) => target.Token == token)
                 .CreateUnique("(claimer)-[:OWNS]->(target)")
                 .Return(target => target.As<Kit>())
+                .Results;
+        }
+
+        public IEnumerable<Kit> CreateKit(Kit k)
+        {
+            return _client.Cypher
+                .Merge("(kit:Kit { Uid: {newUid} })")
+                .OnCreate()
+                .Set("kit = {k}")
+                .WithParams(new
+                {
+                    newUid = k.Uid,
+                    k
+                })
+                .Return(kit => kit.As<Kit>())
                 .Results;
         }
     }
