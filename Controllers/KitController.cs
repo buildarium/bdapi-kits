@@ -49,6 +49,7 @@ namespace bdapi_kits.Controllers
         [HttpPut("{token}")]
         public IEnumerable Put(string token)
         {
+            // TODO: Get first from IEnumerable rather than an array
             IEnumerable kit = _kitService.ClaimKit("456", token);
             return kit;
         }
