@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using bdapi_kits.Models;
 using bdapi_kits.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace bdapi_kits.Controllers
 {
@@ -30,7 +31,9 @@ namespace bdapi_kits.Controllers
         [HttpGet("me")]
         public IEnumerable GetMyKits()
         {
-            // TODO: Get first from IEnumerable rather than an array            IEnumerable kits = _kitService.GetOwnedKits("456");
+            string Email = (string) JObject.Parse(HttpContext.User.Claims.
+                ToList().Last().Value)["identities"]["email"][0];
+            // TODO: Get first from IEnumerable rather than an array            IEnumerable kits = _kitService.GetOwnedKits(Email);
             return kits;
         }
         
@@ -49,8 +52,10 @@ namespace bdapi_kits.Controllers
         [HttpPut("{token}")]
         public IEnumerable Put(string token)
         {
+            string Email = (string)JObject.Parse(HttpContext.User.Claims.
+                ToList().Last().Value)["identities"]["email"][0];
             // TODO: Get first from IEnumerable rather than an array
-            IEnumerable kit = _kitService.ClaimKit("456", token);
+            IEnumerable kit = _kitService.ClaimKit(Email, token);
             return kit;
         }
 

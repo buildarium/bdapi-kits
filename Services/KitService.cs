@@ -52,7 +52,18 @@ namespace bdapi_kits.Services
                     newUser
                 })
                 .ExecuteWithoutResults();
-            
+
+            // Check if node has already been claimed
+            IEnumerable<Kit> ExistingRel = _client.Cypher
+                .OptionalMatch("(u:User)-[:OWNS]-(k:Kit)")
+                .Where((Kit k) => k.Token == Token)
+                .Return(k => k.As<Kit>())
+                .Results;
+            if (ExistingRel.First() != null)
+            {
+                return null;
+            }
+
             // Relate kit node to user node
             return _client.Cypher
                 .Match("(claimer:User)", "(target:Kit)")
