@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Neo4jClient;
 using Microsoft.Extensions.Configuration;
 using bdapi_kits.Models;
-using System.Collections;
 
 namespace bdapi_kits.Services
 {
@@ -17,7 +15,7 @@ namespace bdapi_kits.Services
             _client = graphClient;
         }
 
-        public IEnumerable GetOwnedKits(string uid)
+        public object GetOwnedKits(string uid)
         {
             return _client.Cypher
                 .OptionalMatch("(user:User)-[OWNS]-(kit:Kit)")
@@ -26,20 +24,19 @@ namespace bdapi_kits.Services
                     User = user.As<User>(),
                     Kits = kit.CollectAs<Kit>()
                 })
-                .Results;
-            //return null;
+                .Results.First();
         }
 
-        public IEnumerable<Kit> GetKitDetails(string uid)
+        public Kit GetKitDetails(string uid)
         {
             return _client.Cypher
                 .Match("(kit:Kit)")
                 .Where((Kit kit) => kit.Uid == uid)
                 .Return(kit => kit.As<Kit>())
-                .Results;
+                .Results.First();
         }
 
-        public IEnumerable<Kit> ClaimKit(string uid, string token)
+        public Kit ClaimKit(string uid, string token)
         {
             var newUser = new User { Uid = uid };
             // Create user in database if doesn't already exist
@@ -61,6 +58,7 @@ namespace bdapi_kits.Services
                 .Results;
             if (ExistingRel.First() != null)
             {
+                // Kit has already been claimed
                 return null;
             }
 
@@ -71,10 +69,10 @@ namespace bdapi_kits.Services
                 .AndWhere((Kit target) => target.Token == token)
                 .CreateUnique("(claimer)-[:OWNS]->(target)")
                 .Return(target => target.As<Kit>())
-                .Results;
+                .Results.First();
         }
 
-        public IEnumerable<Kit> CreateKit(Kit k)
+        public Kit CreateKit(Kit k)
         {
             return _client.Cypher
                 .Merge("(kit:Kit { Uid: {newUid} })")
@@ -86,7 +84,7 @@ namespace bdapi_kits.Services
                     k
                 })
                 .Return(kit => kit.As<Kit>())
-                .Results;
+                .Results.First();
         }
     }
 }
