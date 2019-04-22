@@ -10,7 +10,16 @@ namespace bdapi_kits.Services
     {
         private readonly GraphClient _client;
         public KitService(IConfiguration config) {
-            var graphClient = new GraphClient(new System.Uri(config.GetConnectionString("KitDb")), "neo4j", "neoneo");
+            string DbUri = config.GetConnectionString("DevDb");
+            string DbUser = "neo4j";
+            string DbPass = "neoneo";
+            if (System.Environment.GetEnvironmentVariable("ENV") == "prod")
+            {
+                DbUri = config.GetConnectionString("ProdDb");
+                DbUser = System.Environment.GetEnvironmentVariable("DBUSER");
+                DbPass = System.Environment.GetEnvironmentVariable("DBPASS");
+            }
+            var graphClient = new GraphClient(new System.Uri(DbUri), DbUser, DbPass);
             graphClient.Connect();
             _client = graphClient;
         }
