@@ -1,12 +1,8 @@
-using System;
-using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using bdapi_kits.Models;
 using bdapi_kits.Services;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace bdapi_kits.Controllers
@@ -29,33 +25,40 @@ namespace bdapi_kits.Controllers
         // Get your current claimed kits
         // GET /kit/me
         [HttpGet("me")]
-        public IEnumerable GetMyKits()
+        public object GetMyKits()
         {
             string Email = (string) JObject.Parse(HttpContext.User.Claims.
                 ToList().Last().Value)["identities"]["email"][0];
-            // TODO: Get first from IEnumerable rather than an array            IEnumerable MyKits = _kitService.GetOwnedKits(Email);
+            object MyKits = _kitService.GetOwnedKits(Email);
             return MyKits;
+        }
+
+        // Get some user's claimed kits
+        // GET /kit/user/{uid}
+        [HttpGet("user/{uid}")]
+        public object GetOtherKits(string uid)
+        {
+            object OtherKits = _kitService.GetOwnedKits(uid);
+            return OtherKits;
         }
         
         // Get the details for some claimed kit
         // GET /kit/id/{uid}
         [HttpGet("id/{uid}")]
-        public IEnumerable GetKitDetails(string uid)
+        public Kit GetKitDetails(string uid)
         {
-            // TODO: Get first from IEnumerable rather than an array
-            IEnumerable SomeKit = _kitService.GetKitDetails(uid);
+            Kit SomeKit = _kitService.GetKitDetails(uid);
             return SomeKit;
         }
-        
+
         // Claim a kit
-        // PUT /kit/51dbd231dfs241dsdae23c4a
+        // PUT /kit/{token}
         [HttpPut("{token}")]
-        public IEnumerable Put(string token)
+        public Kit Put(string token)
         {
             string Email = (string)JObject.Parse(HttpContext.User.Claims.
                 ToList().Last().Value)["identities"]["email"][0];
-            // TODO: Get first from IEnumerable rather than an array
-            IEnumerable ClaimedKit = _kitService.ClaimKit(Email, token);
+            Kit ClaimedKit = _kitService.ClaimKit(Email, token);
             return ClaimedKit;
         }
 
@@ -64,15 +67,16 @@ namespace bdapi_kits.Controllers
         // Add an available kit that's ready to be claimed
         // POST /kit
         [HttpPost]
-        public IEnumerable Post([FromBody] Kit k)
+        public Kit Post([FromBody] Kit k)
         {
             string Email = (string)JObject.Parse(HttpContext.User.Claims.
                 ToList().Last().Value)["identities"]["email"][0];
             if (Email == "buck@bucktower.net")
             {
-                IEnumerable NewKit = _kitService.CreateKit(k);
+                Kit NewKit = _kitService.CreateKit(k);
                 return NewKit;
             }
+            // Not sent from an administrative account
             return null;
         }
     }
