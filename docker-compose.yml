@@ -10,6 +10,8 @@ services:
       - db
     ports:
       - "5202:80"
+    environment:
+      - ENV=dev
   db:
     image: neo4j
     ports:
