@@ -14,4 +14,8 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+- task: Docker@2
+  inputs:
+    containerRegistry: '88c5f883-3f41-4ccd-92fe-8f53aabe9e13'
+    repository: 'buildarium/bdapi-kits'
+    command: 'buildAndPush'
