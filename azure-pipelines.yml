@@ -18,4 +18,4 @@ steps:
   inputs:
     containerRegistry: '88c5f883-3f41-4ccd-92fe-8f53aabe9e13'
     repository: 'buildarium/bdapi-kits'
-    command: 'buildAndPush'
+    command: 'build'
