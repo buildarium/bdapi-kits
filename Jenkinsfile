@@ -28,7 +28,7 @@ pipeline {
             if (env.BRANCH_NAME == 'master') {
               dockerImage.push("latest")
               sh "kubectl config use-context buildarium"
-              sh "kubectl set image deployment/bdapi-kits bdapi-kits=buildarium/bdapi-kits:${env.BUILD_NUMBER}"
+              sh "kubectl set image deployment/bdapi-kits bdapi-kits=buildarium/bdapi-kits:${env.BUILD_NUMBER} --kubeconfig /var/lib/jenkins/config"
             } else if (env.BRANCH_NAME == 'develop') {
               dockerImage.push("dev")
             }
