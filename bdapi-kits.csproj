@@ -17,4 +17,7 @@
   <ItemGroup>
     <None Remove=".env" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Services\buildarium-firebase-adminsdk-thnt4-726bc37191.json" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 version: '3'
 services:
-  bdapi-auth:
+  bdapi-kits:
     build:
       context: .
       dockerfile: Dockerfile-dev

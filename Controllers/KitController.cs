@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using bdapi_kits.Models;
 using bdapi_kits.Services;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace bdapi_kits.Controllers
 {
@@ -27,23 +30,34 @@ namespace bdapi_kits.Controllers
         [HttpGet("me")]
         public object GetMyKits()
         {
-            string Email = (string) JObject.Parse(HttpContext.User.Claims.
-                ToList().Last().Value)["identities"]["email"][0];
-            object MyKits = _kitService.GetOwnedKits(Email);
+            string Uid = HttpContext.User.Claims.Where(k => k.Type == "sub")
+                .Select(v => v.Value).SingleOrDefault();
+            //var jwt = new JwtSecurityToken(HttpContext.));
+            //Console.WriteLine(HttpContext.User.Claims.SelectMany(x => x.Type));
+            foreach (var i in HttpContext.User.Claims)
+            {
+                Console.WriteLine(i.Type);
+                Console.WriteLine(i.Value);
+            }
+            Console.WriteLine(HttpContext.User.Identity.Name);
+            object MyKits = _kitService.GetOwnedKits(Uid);
+
             return MyKits;
         }
 
         // Get some user's claimed kits
         // GET /kit/user/{uid}
+        [AllowAnonymous]
         [HttpGet("user/{uid}")]
         public object GetOtherKits(string uid)
         {
             object OtherKits = _kitService.GetOwnedKits(uid);
             return OtherKits;
         }
-        
+
         // Get the details for some claimed kit
         // GET /kit/id/{uid}
+        [AllowAnonymous]
         [HttpGet("id/{uid}")]
         public Kit GetKitDetails(string uid)
         {
@@ -56,9 +70,9 @@ namespace bdapi_kits.Controllers
         [HttpPut("{token}")]
         public Kit Put(string token)
         {
-            string Email = (string)JObject.Parse(HttpContext.User.Claims.
-                ToList().Last().Value)["identities"]["email"][0];
-            Kit ClaimedKit = _kitService.ClaimKit(Email, token);
+            string Uid = HttpContext.User.Claims.Where(k => k.Type == "sub")
+                .Select(v => v.Value).SingleOrDefault();
+            Kit ClaimedKit = _kitService.ClaimKit(Uid, token);
             return ClaimedKit;
         }
 
@@ -67,13 +81,13 @@ namespace bdapi_kits.Controllers
         // Add an available kit that's ready to be claimed
         // POST /kit
         [HttpPost]
-        public Kit Post([FromBody] Kit k)
+        public Kit Post([FromBody] Kit kit)
         {
-            string Email = (string)JObject.Parse(HttpContext.User.Claims.
-                ToList().Last().Value)["identities"]["email"][0];
-            if (Email == "buck@bucktower.net")
+            string Uid = HttpContext.User.Claims.Where(k => k.Type == "sub")
+                .Select(v => v.Value).SingleOrDefault();
+            if (Uid == "bucksuid")
             {
-                Kit NewKit = _kitService.CreateKit(k);
+                Kit NewKit = _kitService.CreateKit(kit);
                 return NewKit;
             }
             // Not sent from an administrative account
