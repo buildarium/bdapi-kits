@@ -25,8 +25,7 @@ namespace bdapi_kits.Services
                 DbUser = System.Environment.GetEnvironmentVariable("NEO4JUSER");
                 DbPass = System.Environment.GetEnvironmentVariable("NEO4JPASS");
             }
-            System.Console.WriteLine(DbUri);
-            var graphClient = new GraphClient(new System.Uri(DbUri), DbUser, DbPass);
+            var graphClient = new GraphClient(new System.Uri(DbUri, System.UriKind.Absolute), DbUser, DbPass);
             graphClient.Connect();
             _client = graphClient;
         }
