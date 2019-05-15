@@ -29,6 +29,7 @@ namespace bdapi_kits
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<KitService>();
+            services.AddHttpClient<AuthService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                     options.Authority = "https://securetoken.google.com/buildarium";
@@ -51,7 +52,7 @@ namespace bdapi_kits
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseAuthentication();
+            //app.UseAuthentication();
             
             if (env.IsDevelopment())
             {
