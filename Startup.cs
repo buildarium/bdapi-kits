@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using bdapi_kits.Services;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace bdapi_kits
 {
@@ -28,6 +29,7 @@ namespace bdapi_kits
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<KitService>();
+            services.AddHttpClient<AuthService>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                     options.Authority = "https://securetoken.google.com/buildarium";
@@ -39,14 +41,18 @@ namespace bdapi_kits
                         ValidAudience = "buildarium",
                         ValidateLifetime = true
                     };
+
                 });
+            // No rewriting "sub" and "email" keys when deserializing JWT
+            // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/415
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseAuthentication();
+            //app.UseAuthentication();
             
             if (env.IsDevelopment())
             {
