@@ -18,7 +18,7 @@ namespace bdapi_kits.Services
             }
             if (System.Environment.GetEnvironmentVariable("ENV") == "test")
             {
-                Client.BaseAddress = new System.Uri("bdapi-auth/");
+                Client.BaseAddress = new System.Uri("http://bdapi-auth/");
             }
             else
             {
