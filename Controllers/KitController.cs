@@ -7,12 +7,14 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Cors;
 
 namespace bdapi_kits.Controllers
 {
     //[Authorize] -- deprecated for bdapi-auth until we have JWTs
     [Route("kit")]
     // [Produces("application/json")]
+    [EnableCors("MyPolicy")]
     [ApiController]
     public class KitController : ControllerBase
     {
